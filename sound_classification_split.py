@@ -28,21 +28,3 @@ train_ds, val_ds = random_split(myds, [num_train, num_val])
 # Create training and validation data loaders
 train_dl = torch.utils.data.DataLoader(train_ds, batch_size=16, shuffle=True)
 val_dl = torch.utils.data.DataLoader(val_ds, batch_size=16, shuffle=False)
-
-
-# This code only runs when the file is executed directly, not when imported
-if __name__ == "__main__":
-    # Test code, examples, debugging code, etc.
-
-    print("================================== train_dl ======================================================================================")
-
-    print(f"Number of batches: {len(train_dl)}") 
-    print(f"Total samples: {len(train_dl.dataset)}")  
-    print(f"Batch size: {train_dl.batch_size}")  
-
-
-    print("================================== val_dl ======================================================================================")
-
-    print(f"Number of batches: {len(val_dl)}")  
-    print(f"Total samples: {len(val_dl.dataset)}")  
-    print(f"Batch size: {val_dl.batch_size}") 

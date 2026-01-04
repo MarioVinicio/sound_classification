@@ -87,8 +87,6 @@ class AudioClassifier(nn.Module):
 
 # Create the model and put it on the GPU if available
 myModel = AudioClassifier()
-# device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-# print(f'device = {device}')
 
 # Set device to MPS (Metal) for Apple Silicon
 if torch.backends.mps.is_available():

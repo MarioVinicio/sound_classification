@@ -31,6 +31,3 @@ def inference (model, val_dl):
     
   acc = correct_prediction/total_prediction
   print(f'Inference = Accuracy: {acc:.2f}, Total items: {total_prediction}')
-
-# # Run inference on trained model with the validation set
-# inference(myModel, val_dl)
