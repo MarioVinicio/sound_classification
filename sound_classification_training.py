@@ -65,14 +65,14 @@ def training(model, train_dl, num_epochs):
   print('Finished Training')
   return epoch, avg_loss, acc
   
-num_epochs=30  # Just for demo, adjust this higher.
+num_epochs=1  # Just for demo, adjust this higher.
 epoch, avg_loss, acc = training(myModel, train_dl, num_epochs)
 
 # Save weights after training
-torch.save(myModel.state_dict(), f'mymodel_weights_epoch_{num_epochs}_reduced_1_layer.pth')
+torch.save(myModel.state_dict(), f'mymodel_weights_epoch_{num_epochs}.pth')
 
 # Save the entire model
-torch.save(myModel, f'mymodel_entire_epoch_{num_epochs}_reduced_1_layer.pth')
+torch.save(myModel, f'mymodel_entire_epoch_{num_epochs}.pth')
 
 # Run inference on trained model with the validation set
 inference(myModel, val_dl)

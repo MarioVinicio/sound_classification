@@ -20,7 +20,6 @@ myds = SoundDS(df, data_path)
 
 # Random split of 80:20 between training and validation
 num_items = len(myds)
-# num_train = round(num_items * 0.5)
 num_train = round(num_items * 0.8)
 num_val = num_items - num_train
 train_ds, val_ds = random_split(myds, [num_train, num_val])

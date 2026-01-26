@@ -5,6 +5,7 @@ import pandas as pd
 from pathlib import Path
 
 download_path = Path.cwd()/'UrbanSound8K'
+print(f"Audio Data folder: {download_path}")
 
 def metadata_file():
     # Read metadata file
