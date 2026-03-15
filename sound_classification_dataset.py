@@ -1,6 +1,6 @@
 from torch.utils.data import DataLoader, Dataset, random_split
 # import torchaudio
-from audio_util_load import AudioUtil
+from audio_utils.audio_util_load import AudioUtil
 
 # ----------------------------
 # Sound Dataset

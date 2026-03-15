@@ -1,7 +1,7 @@
 import torch
 from torch.utils.data import random_split
 from sound_classification_dataset import SoundDS
-import audio_metadata
+import audio_utils.audio_metadata as audio_metadata
 
 
 df = audio_metadata.metadata_file()

@@ -4,7 +4,6 @@ import torch
 from torchaudio import transforms
 from IPython.display import Audio
 
-import audio_metadata
 
 import sklearn
 import sklearn.preprocessing

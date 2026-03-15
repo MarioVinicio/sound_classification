@@ -1,3 +1,4 @@
+import os
 import torch
 import torch.nn as nn
 from sound_classification_model import myModel
@@ -68,11 +69,14 @@ def training(model, train_dl, num_epochs):
 num_epochs=1  # Just for demo, adjust this higher.
 epoch, avg_loss, acc = training(myModel, train_dl, num_epochs)
 
+save_dir = os.getcwd() + "/sound_classification/trained_models"
+print("Saving model to:", save_dir)
+
 # Save weights after training
-torch.save(myModel.state_dict(), f'mymodel_weights_epoch_{num_epochs}.pth')
+torch.save(myModel.state_dict(), os.path.join(save_dir, f'mymodel_weights_epoch_{num_epochs}.pth'))
 
 # Save the entire model
-torch.save(myModel, f'mymodel_entire_epoch_{num_epochs}.pth')
+torch.save(myModel, os.path.join(save_dir, f'mymodel_entire_epoch_{num_epochs}.pth'))
 
 # Run inference on trained model with the validation set
 inference(myModel, val_dl)
