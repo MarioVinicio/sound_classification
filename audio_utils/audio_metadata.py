@@ -17,7 +17,7 @@ def metadata_file():
     df['absolute_path'] = str(download_path) + '/audio' + df['relative_path']
 
     # Take relevant columns
-    df = df[['relative_path', 'absolute_path', 'classID']]
+    df = df[['relative_path', 'absolute_path', 'fold', 'classID']]
 
     return df
     
