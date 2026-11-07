@@ -57,20 +57,19 @@ class AudioUtil():
     def resample(aud, newsr):
         sig, sr = aud
 
-        if (sr == newsr):
-            # Nothing to do
-            return aud
+        # Ensure tensor
+        if not isinstance(sig, torch.Tensor):
+            sig = torch.tensor(sig)
 
-        num_channels = sig.shape[0]
-        # Resample first channel
-        resig = transforms.Resample(sr, newsr)(sig[:1,:])
-        if (num_channels > 1):
-            # Resample the second channel and merge both channels
-            retwo = transforms.Resample(sr, newsr)(sig[1:,:])
-            resig = torch.cat([resig, retwo])
+        # Fix shape: make it (channels, samples)
+        if sig.ndim == 1:
+            sig = sig.unsqueeze(0)
+
+        # Now safe
+        resig = transforms.Resample(sr, newsr)(sig)
 
         return (resig, newsr)
-    
+
     # ----------------------------
     # Pad (or truncate) the signal to a fixed length 'max_ms' in milliseconds
     # ----------------------------
