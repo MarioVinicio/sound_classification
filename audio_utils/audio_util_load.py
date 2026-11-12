@@ -51,7 +51,8 @@ class AudioUtil():
         return (resig, sr)
     
     # ----------------------------
-    # Since Resample applies to a single channel, we resample one channel at a time
+    # Resample all channels to the new sample rate. Accepts numpy arrays and
+    # 1-D signals (e.g. raw microphone input) as well as (channels, samples) tensors.
     # ----------------------------
     @staticmethod
     def resample(aud, newsr):
@@ -74,7 +75,11 @@ class AudioUtil():
     # Pad (or truncate) the signal to a fixed length 'max_ms' in milliseconds
     # ----------------------------
     @staticmethod
-    def pad_trunc(aud, max_ms):
+    def pad_trunc(aud, max_ms, random_pad=True):
+        """
+        random_pad=True places the signal at a random offset (training augmentation).
+        random_pad=False centers it, so inference is deterministic.
+        """
         sig, sr = aud
         num_rows, sig_len = sig.shape
         max_len = sr//1000 * max_ms
@@ -85,7 +90,10 @@ class AudioUtil():
 
         elif (sig_len < max_len):
             # Length of padding to add at the beginning and end of the signal
-            pad_begin_len = random.randint(0, max_len - sig_len)
+            if random_pad:
+                pad_begin_len = random.randint(0, max_len - sig_len)
+            else:
+                pad_begin_len = (max_len - sig_len) // 2
             pad_end_len = max_len - sig_len - pad_begin_len
 
             # Pad with 0s

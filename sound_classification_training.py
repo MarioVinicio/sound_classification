@@ -1,10 +1,9 @@
+import argparse
 import os
 import torch
 import torch.nn as nn
-from sound_classification_model import myModel
-from sound_classification_model import device
-from sound_classification_split import train_dl
-from sound_classification_split import val_dl
+import audio_utils.audio_metadata as audio_metadata
+from sound_classification_model import AudioClassifier, device
 from sound_classification_inference import inference
 
 
@@ -19,6 +18,9 @@ def training(model, train_dl, num_epochs):
                                                 steps_per_epoch=int(len(train_dl)),
                                                 epochs=num_epochs,
                                                 anneal_strategy='linear')
+
+  # Make sure BatchNorm is in training mode (the model may have been in eval mode)
+  model.train()
 
   # Repeat for each epoch
   for epoch in range(num_epochs):
@@ -54,9 +56,9 @@ def training(model, train_dl, num_epochs):
         correct_prediction += (prediction == labels).sum().item()
         total_prediction += prediction.shape[0]
 
-        if i % 10 == 0:    # print every 10 mini-batches
-           print('[%d, %5d] loss: %.3f' % (epoch + 1, i + 1, running_loss / 10))
-    
+        if i % 10 == 0:    # print every 10 mini-batches (average loss so far this epoch)
+           print('[%d, %5d] loss: %.3f' % (epoch + 1, i + 1, running_loss / (i + 1)))
+
     # Print stats at the end of the epoch
     num_batches = len(train_dl)
     avg_loss = running_loss / num_batches
@@ -65,20 +67,39 @@ def training(model, train_dl, num_epochs):
 
   print('Finished Training')
   return epoch, avg_loss, acc
-  
-num_epochs=1  # Just for demo, adjust this higher.
-epoch, avg_loss, acc = training(myModel, train_dl, num_epochs)
 
-save_dir = os.getcwd() + "/sound_classification/trained_models"
-print("Saving model to:", save_dir)
 
-# Save weights after training
-torch.save(myModel.state_dict(), os.path.join(save_dir, f'mymodel_weights_epoch_{num_epochs}.pth'))
+def main():
+  parser = argparse.ArgumentParser(description="Train AudioClassifier on an 80/20 seeded split of UrbanSound8K")
+  parser.add_argument("--epochs", type=int, default=1, help="number of epochs (default 1, just for demo)")
+  parser.add_argument("--max-samples", type=int, default=None, help="train on a random subset (smoke tests)")
+  parser.add_argument("--save-dir", default=str(audio_metadata.MODELS_DIR), help="where to save the .pth files")
+  args = parser.parse_args()
 
-# Save the entire model
-torch.save(myModel, os.path.join(save_dir, f'mymodel_entire_epoch_{num_epochs}.pth'))
+  from sound_classification_split import get_dataloaders
+  train_dl, val_dl = get_dataloaders(max_samples=args.max_samples)
 
-# Run inference on trained model with the validation set
-inference(myModel, val_dl)
+  print(f"Using device: {device}")
+  myModel = AudioClassifier().to(device)
+  num_epochs = args.epochs
+  epoch, avg_loss, acc = training(myModel, train_dl, num_epochs)
 
-print(f'Training = Epoch: {epoch}, Loss: {avg_loss:.2f}, Accuracy: {acc:.2f}')
+  save_dir = args.save_dir
+  os.makedirs(save_dir, exist_ok=True)
+  print("Saving model to:", save_dir)
+
+  # Save weights after training
+  torch.save(myModel.state_dict(), os.path.join(save_dir, f'mymodel_weights_epoch_{num_epochs}.pth'))
+
+  # Save the entire model
+  torch.save(myModel, os.path.join(save_dir, f'mymodel_entire_epoch_{num_epochs}.pth'))
+
+  # Run inference on trained model with the validation set
+  inference(myModel, val_dl)
+
+  print(f'Training = Epoch: {epoch}, Loss: {avg_loss:.2f}, Accuracy: {acc:.2f}')
+
+
+# Only train when run as a script, not when another module imports training()
+if __name__ == "__main__":
+  main()

@@ -1,14 +1,16 @@
 import torch
-from sound_classification_model import myModel
 from sound_classification_model import device
-from sound_classification_split import val_dl
+
 
 # ----------------------------
-# Inference
+# Inference: accuracy of `model` on the clips in `val_dl`
 # ----------------------------
-def inference (model, val_dl):
+def inference(model, val_dl):
   correct_prediction = 0
   total_prediction = 0
+
+  # Use BatchNorm running statistics instead of per-batch statistics
+  model.eval()
 
   # Disable gradient updates
   with torch.no_grad():
@@ -28,6 +30,7 @@ def inference (model, val_dl):
       # Count of predictions that matched the target label
       correct_prediction += (prediction == labels).sum().item()
       total_prediction += prediction.shape[0]
-    
+
   acc = correct_prediction/total_prediction
   print(f'Inference = Accuracy: {acc:.2f}, Total items: {total_prediction}')
+  return acc

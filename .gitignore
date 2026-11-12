@@ -1,0 +1,24 @@
+# General Python ignores
+__pycache__/
+*.pyc
+.venv/
+env/
+trained_models/*
+
+# Ignore model weights
+*.pth
+*.pt
+*.ckpt
+
+# But keep key models
+!trained_models/mymodel_weights_epoch_30.pth
+!trained_models/progressive_training_model_weights_epoch_15.pth
+
+# # Ignore large data
+UrbanSound8K/
+# data/
+# *.csv
+# *.npy
+
+# System files
+.DS_Store

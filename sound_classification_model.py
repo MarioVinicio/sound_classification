@@ -85,19 +85,25 @@ class AudioClassifier(nn.Module):
         # Final output
         return x
 
-# Create the model and put it on the GPU if available
-myModel = AudioClassifier()
+# ----------------------------
+# Pick the best available device: MPS (Metal) for Apple Silicon, then CUDA, then CPU
+# ----------------------------
+def get_device():
+    if torch.backends.mps.is_available():
+        return torch.device("mps")
+    if torch.cuda.is_available():
+        return torch.device("cuda")
+    return torch.device("cpu")
 
-# Set device to MPS (Metal) for Apple Silicon
-if torch.backends.mps.is_available():
-    device = torch.device("mps")
-elif torch.cuda.is_available():
-    device = torch.device("cuda")
-else:
-    device = torch.device("cpu")
 
-print(f"Using device: {device}")
+device = get_device()
 
-myModel = myModel.to(device)
-# Check that it is on Cuda
-next(myModel.parameters()).device
+
+# ----------------------------
+# Build a model and load saved weights (state_dict) for inference
+# ----------------------------
+def load_model(weights_path, device=device):
+    model = AudioClassifier().to(device)
+    model.load_state_dict(torch.load(weights_path, map_location=device, weights_only=True))
+    model.eval()
+    return model
