@@ -1,11 +1,21 @@
 # ----------------------------
-# Prepare training data from Metadata file
+# Project paths, class labels and the UrbanSound8K metadata file
 # ----------------------------
 import pandas as pd
 from pathlib import Path
 
-download_path = Path.cwd()/'sound_classification/UrbanSound8K'
-print(f"Audio Data folder: {download_path}")
+# Paths are resolved relative to this file, so the scripts work no matter which
+# directory they are launched from.
+PROJECT_DIR = Path(__file__).resolve().parent.parent
+download_path = PROJECT_DIR / 'UrbanSound8K'
+MODELS_DIR = PROJECT_DIR / 'trained_models'
+
+# UrbanSound8K classID order
+CLASS_LABELS = [
+    'air_conditioner', 'car_horn', 'children_playing', 'dog_bark',
+    'drilling', 'engine_idling', 'gun_shot', 'jackhammer', 'siren', 'street_music'
+]
+
 
 def metadata_file():
     # Read metadata file
@@ -20,4 +30,3 @@ def metadata_file():
     df = df[['relative_path', 'absolute_path', 'fold', 'classID']]
 
     return df
-    
